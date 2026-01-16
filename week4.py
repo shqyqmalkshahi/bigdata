@@ -18,11 +18,14 @@ sentences = [
 # Parallelize into RDD
 sentences_rdd = sc.parallelize(sentences)
 
-# Transformation (replace with your own logic)
-transformed = sentences_rdd.map(lambda s: s.upper())
+# Transformation: reverse word order in each sentence
+transformed = sentences_rdd.map(
+    lambda s: " ".join(s.rstrip(".").split(" ")[::-1]) + "."
+)
 
-# Show some results (will go to YARN driver logs in cluster mode)
-for line in transformed.take(100):
-    print(line)
+# Save results to HDFS
+output_path = "hdfs:///tmp/week4_output"
+transformed.saveAsTextFile(output_path)
 
 spark.stop()
+
